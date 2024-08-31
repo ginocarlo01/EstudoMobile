@@ -43,7 +43,7 @@ class Tip {
     if (_totalAmount == null) {
       return (0).toStringAsFixed(2);
     }
-    return (_totalAmount! * (_customTip / 100)).toStringAsFixed(2);
+    return (_totalAmount! * (1 + _customTip! / 100)).toStringAsFixed(2);
   }
 
   set amount(String value) {
