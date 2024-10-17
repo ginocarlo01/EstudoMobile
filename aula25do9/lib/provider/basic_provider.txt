@@ -1,0 +1,19 @@
+import 'package:aula25do9/model/note.dart';
+
+class GenericCrudProvider {
+  static GenericCrudProvider helper = GenericCrudProvider._createInstance();
+
+  GenericCrudProvider._createInstance();
+
+  Map<String, Note> database = {};
+
+  Future<Note> getNote(String noteId) async {}
+
+  Future<String> insertNote(Note note) async {}
+
+  Future<String> updateNote(String noteId, Note note) async {}
+
+  Future<String> deleteNote(String noteId) async {}
+
+  Future<List<Note>> getNoteList() async {}
+}

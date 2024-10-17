@@ -1,0 +1,65 @@
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("teste");
+});
+
+//app.listen(3000, () => {});
+
+const notes = {
+  0: { description: "chave1", title: "valor1" },
+  1: { description: "gino", title: "euler" },
+};
+
+count = 3;
+
+const endpoint = "/notes";
+
+app.get(endpoint, (req, res) => {
+  res.send(notes);
+});
+
+app.get(`${endpoint}/:id`, (req, res) => {
+  const id = req.params.id;
+  res.send(notes[id]);
+});
+
+app.delete(`${endpoint}/:id`, (req, res) => {
+  const id = req.params.id;
+  delete notes[id];
+
+  io.emit("server_information", "gino");
+  res.send({});
+});
+
+app.post(endpoint, (req, res) => {
+  const note = req.body;
+  notes[count] = note;
+  count++;
+  io.emit("server_information", notes[count]);
+  res.send(`${count}`);
+});
+
+app.put(`${endpoint}/:id`, (req, res) => {
+  const id = req.params.id;
+  const note = req.body;
+  notes[id] = note;
+
+  io.emit("server_information", notes[id]);
+
+  res.send(`${id}`);
+});
+
+// Stream
+const server = require("http").createServer(app);
+var io = require("socket.io")(server);
+server.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+
+io.on("connection", (socket) => {});

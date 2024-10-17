@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:socket_io_client/socket_io_client.dart';
 import 'package:dio/dio.dart';
 
 import '../model/note.dart';
@@ -24,7 +24,7 @@ class GenericCrudProvider {
  
 
   Future<Note> getNote(String noteId) async {
-    Response response = await _dio.get("https://si700s2-default-rtdb.firebaseio.com/.json");
+    Response response = await _dio.get("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes");
     Note note = Note.fromMap(response.data);
     note.noteId = noteId;
     return note;
@@ -32,7 +32,7 @@ class GenericCrudProvider {
 
   Future<String> insertNote(Note note) async {
 
-    _dio.post("https://si700s2-default-rtdb.firebaseio.com/.json",
+    _dio.post("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes",
     data: note.toMap());
   /*
     String key = numInsertions.toString();
@@ -42,34 +42,33 @@ class GenericCrudProvider {
     _controller.sink.add(key);
     return key;
     */
-    _controller.sink.add("1");
+    //_controller.sink.add("1");
     return '1';
   }
 
   Future<String> updateNote(String noteId, Note note) async {
 
-    _dio.put("https://si700s2-default-rtdb.firebaseio.com/$noteId/.json", 
+    _dio.put("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes/$noteId/", 
     data: note.toMap());
 
     /*
     note.noteId = noteId;
     database[noteId] = note;
     */
-    _controller.sink.add(noteId);
+    //_controller.sink.add(noteId);
     return noteId;
     
   }
-
   Future<String> deleteNote(String noteId) async {
-   _dio.delete("https://si700s2-default-rtdb.firebaseio.com/$noteId/.json");
+   _dio.delete("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes/$noteId");
 
     //database.remove(noteId);
-    _controller.sink.add(noteId);
+    //_controller.sink.add(noteId);
     return noteId;
   }
 
   Future<List<Note>> getNoteList() async {
-    Response response=await _dio.get("https://si700s2-default-rtdb.firebaseio.com/.json");
+    Response response=await _dio.get("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes");
     List<Note> noteList = [];
     response.data.forEach((k,v)
     {
@@ -79,12 +78,11 @@ class GenericCrudProvider {
     });
     return noteList;
   }
-
+//flutter pub add socket_io_client
   /*
     Parte da Stream
   */
   final _random = Random();
-  final StreamController _controller = StreamController();
   final _count = 0;
 
   final List<String> respostas = [
@@ -95,7 +93,23 @@ class GenericCrudProvider {
     "Vamos nos conhecer melhor?"
   ];
 
+
+   StreamController? _controller;
+
   Stream get stream {
-    return _controller.stream;
+
+    if(_controller == null){
+      _controller = StreamController();
+
+      Socket socket = io(
+        "https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev",
+        OptionBuilder().setTransports(['websocket']).build());
+      
+      socket.on('server_information', (data) {
+        _controller!.sink.add("gino");
+      });
+
+    }
+    return _controller!.stream;
   }
 }
