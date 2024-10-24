@@ -1,5 +1,6 @@
 import 'package:eunaoseichegueiatrasado/model/user_model.dart';
 import 'package:eunaoseichegueiatrasado/provider/auth_provider.dart';
+import 'package:eunaoseichegueiatrasado/provider/generic_crud_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../provider/auth_provider.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -15,9 +16,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthServerEvent>((event, emit){
       if(event.userModel == null){
+        GenericCrudProvider.helper.uid = "default";
         emit(Unauthenticated());
       }
       else{
+        GenericCrudProvider.helper.uid = event.userModel!.uid;
         emit(Authenticated(username: event.userModel!.uid));
       }
     });
@@ -28,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.username, 
         event.password);
       } catch(e){
+        GenericCrudProvider.helper.uid = "default";
         emit(AuthError(message: "Impossivel logar: ${e.toString()}"));
       }
       
@@ -38,6 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.username, 
         event.password);
       } catch(e){
+        GenericCrudProvider.helper.uid = "default";
         emit(AuthError(message: "Impossivel logar: ${e.toString()}"));
       }
     });

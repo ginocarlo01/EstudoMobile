@@ -1,81 +1,62 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:dio/dio.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/note.dart';
 
 class GenericCrudProvider {
   static GenericCrudProvider helper = GenericCrudProvider._createInstance();
   final Dio _dio = Dio();
+
+  final CollectionReference noteCollection = FirebaseFirestore.instance.collection("notes");
   
+  String uid = "default";
+
   GenericCrudProvider._createInstance();
 
-
-/*
-  Map<String, Note> database = {};
-  Future<Note> getNote(String noteId) async {}
-  Future<String> insertNote(Note note) async {}
-  Future<String> updateNote(String noteId, Note note) async {}
-  Future<String> deleteNote(String noteId) async {}
-  Future<List<Note>> getNoteList() async {}
-*/
 
  
 
   Future<Note> getNote(String noteId) async {
-    Response response = await _dio.get("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes");
-    Note note = Note.fromMap(response.data);
+    DocumentSnapshot response = await noteCollection.doc(uid).collection("my_notes").doc(noteId).get();
+    Note note = Note.fromMap(response.data());
     note.noteId = noteId;
     return note;
   }
 
   Future<String> insertNote(Note note) async {
-
-    _dio.post("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes",
-    data: note.toMap());
-  /*
-    String key = numInsertions.toString();
-    note.noteId = key;
-    database[key] = note;
-    numInsertions++;
-    _controller.sink.add(key);
-    return key;
-    */
-    //_controller.sink.add("1");
+    noteCollection.doc(uid).collection("my_notes").add(
+      note.toMap()
+    );
+    
     return '1';
   }
 
   Future<String> updateNote(String noteId, Note note) async {
 
-    _dio.put("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes/$noteId/", 
-    data: note.toMap());
-
-    /*
-    note.noteId = noteId;
-    database[noteId] = note;
-    */
-    //_controller.sink.add(noteId);
+    noteCollection.doc(uid).collection("my_notes").doc(noteId).update(note.toMap());
     return noteId;
     
   }
   Future<String> deleteNote(String noteId) async {
-   _dio.delete("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes/$noteId");
-
-    //database.remove(noteId);
-    //_controller.sink.add(noteId);
+    noteCollection.doc(uid).collection("my_notes").doc(noteId).delete();
     return noteId;
   }
 
   Future<List<Note>> getNoteList() async {
-    Response response=await _dio.get("https://7c3c2ca4-f4d1-4a1a-8e5b-a0bfd8fb439f-00-196n8wf7zcll2.worf.replit.dev/notes");
+    
+    QuerySnapshot querySnapshot = await noteCollection.doc(uid).collection("my_notes").get();
+    
     List<Note> noteList = [];
-    response.data.forEach((k,v)
+    for(var doc in querySnapshot.docs)
     {
-        Note note = Note.fromMap(v);
-        note.noteId = k;
+        Note note = Note.fromMap(doc.data());
+        note.noteId = doc.id;
         noteList.add(note);
-    });
+    }
     return noteList;
   }
 //flutter pub add socket_io_client
