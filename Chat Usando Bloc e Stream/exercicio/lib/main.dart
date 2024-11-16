@@ -1,5 +1,5 @@
-import 'package:ex2/bloc/chat_bloc.dart';
-import 'package:ex2/view/chat_screen.dart';
+import '../bloc/chat_bloc.dart';
+import '../view/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
