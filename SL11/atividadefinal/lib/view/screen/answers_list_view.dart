@@ -11,15 +11,16 @@ class AnswerList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Registros'),
+        title: const Text('Respostas'),
       ),
       body: _buildAnswersList(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
           // Cria um novo registro e navega para a tela de criação
-          BlocProvider.of<MonitorBloc>(context).handleAskNewList();  // Opcional, dependendo do fluxo
-          Navigator.pushNamed(context, "/create");
+          BlocProvider.of<MonitorBloc>(context)
+              .handleAskNewList(); // Opcional, dependendo do fluxo
+          Navigator.pushNamed(context, "/questions");
         },
       ),
     );
@@ -50,7 +51,9 @@ class AnswerList extends StatelessWidget {
                 icon: const Icon(Icons.delete),
                 onPressed: () {
                   // Deleta o registro ao clicar no ícone
-                  BlocProvider.of<MonitorBloc>(context).answerCollection.deleteAnswerOfId(id);
+                  BlocProvider.of<MonitorBloc>(context)
+                      .answerCollection
+                      .deleteAnswerOfId(id);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Resposta $id excluída')),
                   );

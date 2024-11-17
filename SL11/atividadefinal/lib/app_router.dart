@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'model/question.dart';
 import 'model/questions.dart';
 import 'data/question_provider.dart';
+import 'view/screen/answers_list_view.dart';
 import 'view/widgets/QuestionRadioButtonField.dart';
 import 'view/widgets/QuestionTextField.dart';
 import 'view/widgets/QuestionDropDownField.dart';
@@ -20,10 +21,16 @@ class AppRouter {
   Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
+        return MaterialPageRoute(builder: (_) => _buildAnswersList());
+      case '/questions':
         return MaterialPageRoute(builder: (_) => _buildQuestionsScreen());
       default:
-        return _getQuestionScreenRoute(settings);
+        return MaterialPageRoute(builder: (_) => _buildAnswersList());
     }
+  }
+
+  Widget _buildAnswersList() {
+    return AnswerList();
   }
 
   // Método para construir a tela de perguntas dinamicamente
@@ -32,26 +39,26 @@ class AppRouter {
 
     // Obtendo a lista de perguntas
     Questions questions = QuestionProvider.helper.questions;
-    
+
     // Adicionando widgets para cada tipo de pergunta
     for (int i = 0; i < questions.questionList.length; i++) {
       Question question = questions.questionList[i];
       switch (question.type) {
         case QuestionType.singleShort:
-          localBucket.add(QuestionRadioButtonField(
-            question: question, questionIndex: i));
+          localBucket.add(
+              QuestionRadioButtonField(question: question, questionIndex: i));
           break;
         case QuestionType.singleLong:
-          localBucket.add(QuestionDropDownField(
-            question: question, questionIndex: i));
+          localBucket
+              .add(QuestionDropDownField(question: question, questionIndex: i));
           break;
         case QuestionType.multiple:
-          localBucket.add(QuestionCheckBoxField(
-            question: question, questionIndex: i));
+          localBucket
+              .add(QuestionCheckBoxField(question: question, questionIndex: i));
           break;
         case QuestionType.text:
-          localBucket.add(QuestionTextField(
-            question: question, questionIndex: i));
+          localBucket
+              .add(QuestionTextField(question: question, questionIndex: i));
           break;
         default:
           localBucket.add(Container());
